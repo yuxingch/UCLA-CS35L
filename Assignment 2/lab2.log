@@ -1,0 +1,122 @@
+1. Since locale does not give the desired outputs, I use:
+   export LC_ALL='C'
+   and then locale outputs the right things
+   
+2. To start with, create the file words by:
+   sort /usr/share/dict/words > words
+
+3. Next, I get assign2.html:
+   wget http://web.cs.ucla.edu/classes/winter16/cs35L/assign/assign2.html
+
+4. Output of each command:
+(1) tr -c 'A-Za-z' '[\n*]' < assign2.html
+outputs: every character other than A-Z a-z is replaced by a new line
+reason:
+        tr is used to translate or delete characters from standard input,
+	writing to standard output.
+        -c (--complement) it means that it uses the complement of SET1
+	tr -c replaces the complement of A-Z a-z (which, in this case,
+	all the non-alphabetic characters,) with new lines.
+
+(2) tr -cs 'A-Za-z' '[\n*]' < assign2.html
+outputs: the part that differs from (1): one word per line, and there are no
+         blank lines.
+reason:
+        -s (--squeeze-repeats) replace each input sequence of a repeated
+	character with a single occurrence. 
+
+(3) tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort
+outputs: this command sort the content in the ASCII order
+reason: we add "sort" command after the previous command.
+
+(4) tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u
+outputs: compared to the previous command, it eliminates the repeated
+         words.
+reason: since the sort command contains -u, it outputs the first of an equal
+        run. 
+
+(5) tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm - words
+outputs: There are three columns. The first column lists the words that only
+         show up in assign2.html. The second column lists the words that
+	 only show up in words. The third column lists all the words that
+	 show up in both files.
+reason:
+        comm compares two sorted files line by line
+	since in this command, comm comes with no options, it will produce
+	three-column output:
+	    column 1 contains lines unique to FILE1
+	    column 2 contains lines unique to FILE2
+	    column 3 contains lines common to both files
+
+(6) tr -cs 'A-Za-z' '[\n*]' < assign2.html | sort -u | comm -23 - words
+outputs: it lists only the unique words in assign2.html
+reason: -23 suppress column2 and column3
+
+5. buildwords
+(1) The shell script:
+#! /bin/bash
+
+# remove the beginning and the ending
+sed '/<!DOCTYPE/,/<td>Adopt/d' |
+sed '/<\/table>/,/<\/html>/d'|
+
+# translate all the uppercase letters into lowercase
+tr '[:upper:]' '[:lower:]'|
+
+# delete all the English words
+sed '/<tr>/,/<\/td>/d'|
+
+# delete all the </tr>, <td>, </td>
+sed 's/<\/tr>//g'|
+sed 's/<td>//g'|
+sed 's/<\/td>//g'|
+
+# remove all the <u>, </u>
+sed 's/<u>//g'|
+sed 's/<\/u>//g'|
+
+# separate words (commas and spaces)
+sed 's/,/\n/g' |
+sed 's/\ /\n/g'|
+
+# replace ` with '
+tr '`' "'"|
+
+# only keep Hawaiian words
+tr -c "pk\'mnwlhaeiou\n" "b"|
+sed '/b/d' |
+
+# check
+tr -cs "pk\'mnwlhaeiou" '[\n*]'|
+
+# delete the first line
+sed 1d|
+
+sort -u
+
+(2) To make it executable:
+chmod +x buildwords
+
+(3) Get Hawaiian dictionary (which will be used in the next problem)
+./buildwords < hwnwdseng.htm > hwords
+
+6. spelling checker
+(1) English spelling checker
+(a) Regardless of upper/lowercase
+cat assign2.html |tr -cs 'A-Za-z' '[\n*]' | sort -u | comm -23 - words | wc -w
+80
+(b) Convert all uppercase characters to lowercase
+cat assign2.html |tr -cs 'A-Za-z' '[\n*]' | tr '[:upper:]' '[:lower:] ' |
+sort -u | comm -23 - words | wc -w
+38
+
+(2) Hawaiian spelling checker
+tr -cs "pk\'mnwlhaeiou" '[\n*]' < assign2.html | tr '[:upper:]' '[:lower:]' |
+sort -u | comm -23 - hwords | wc -w
+199
+
+(3) Examples:
+"misspelled" as English, but not as Hawaiian:
+    halau, lau, wiki
+"misspelled" as Hawaiian but not as English:
+    he, hell, hen, how, keep, line...
