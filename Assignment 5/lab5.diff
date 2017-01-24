@@ -1,8 +1,8 @@
-2016-02-05  Yuxing Chen  <classych@lnxsrv09.seas.ucla.edu>
+2016-02-05  Yyxxxx Ch  <classxxx@lnxsrv09.seas.ucla.edu>
 
         * timespec.h (timespec_cmp): Fix the bug that ls -t mishandles files whose time stamps are very far in the past.
 
---- /u/eng/class/classych/35L/week5/lab5/newTar/coreutils-with-bug/lib/timespec.h	2005-09-21 23:05:39.000000000 -0700
+--- /u/eng/class/classxxx/35L/week5/lab5/newTar/coreutils-with-bug/lib/timespec.h	2005-09-21 23:05:39.000000000 -0700
 +++ timespec.h	2016-02-05 15:53:06.466174000 -0800
 @@ -45,8 +45,19 @@
  static inline int
