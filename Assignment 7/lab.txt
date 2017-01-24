@@ -1,0 +1,122 @@
+1. First I generate a file contains 5,000,000 bytes using:
+#include <stdio.h>
+
+int main()
+{
+  int i;
+  for (i = 0; i < 5000000; i++)
+    printf("7");
+  return 0;
+}
+
+gcc -o bigfile bigfile.c
+then compile: ./bigfile > big
+
+Now file "big" contains 5,000,000 bytes.
+
+2. Use the strace command to compare the system calls issued by your tr2b and tr2u commands:
+gcc -o tr2b tr2b.c
+gcc -o tr2u tr2u.c
+
+(a) when copying one file to another:
+    i. tr2b
+
+strace -c ./tr2b 7 e < big > test1
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 37.66    0.000177           2        77           write
+ 30.85    0.000145           2        79           read
+  0.00    0.000047           5         9           mmap
+  5.32    0.000025           6         4           mprotect
+  4.04    0.000019           5         4           fstat
+  3.40    0.000016           8         2           open
+  2.13    0.000010          10         1           munmap
+  1.70    0.000008           4         2           close
+  1.70    0.000008           8         1         1 access
+  1.49    0.000007           7         1           execve
+  0.85    0.000004           4         1           brk
+  0.85    0.000004           4         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000470                   182         1 total
+
+    ii. tr2u
+  
+strace -c ./tr2u 7 e < big > test2
+
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 55.49    5.497628           1   5000000           write
+ 44.51    4.409308           1   5000002           read
+  0.00    0.000038           5         7           mmap
+  0.00    0.000025           6         4           mprotect
+  0.00    0.000021          11         2           open
+  0.00    0.000017          17         1           brk
+  0.00    0.000010          10         1           munmap
+  0.00    0.000009           9         1           execve
+  0.00    0.000007           4         2           close
+  0.00    0.000007           4         2           fstat
+  0.00    0.000007           7         1         1 access
+  0.00    0.000003           3         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    9.907080              10000024         1 total
+
+(b) when copying a file to your terminal:
+    i. tr2b
+strace -c ./tr2b 7 e < big
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 96.88    0.002141           0      4883           write
+  3.12    0.000069           1        79           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         4           fstat
+  0.00    0.000000           0         9           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.002210                  4988         1 total
+
+    ii. tr2u
+    
+strace -c ./tr2u 7 e < big
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 58.46    6.558552           1   5000000           write
+ 41.54    4.660923           1   5000002           read
+  0.00    0.000039           6         7           mmap
+  0.00    0.000024           6         4           mprotect
+  0.00    0.000016           8         2           open
+  0.00    0.000010          10         1           munmap
+  0.00    0.000008           4         2           fstat
+  0.00    0.000008           8         1         1 access
+  0.00    0.000007           4         2           close
+  0.00    0.000007           7         1           execve
+  0.00    0.000004           4         1           brk
+  0.00    0.000004           4         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00   11.219602              10000024         1 total
+		      
+3. Use the time command to measure how much faster one program is.
+
+(a) Use tr2b
+time ./tr2b 7 e < big
+
+real	0m0.455s
+user	0m0.215s
+sys	0m0.032s
+
+(b) Use tr2u
+time ./tr2u 7 e < big
+
+real 0m5.395s
+user 0m0.323s
+sys  0m5.008s
+
+(c) From (a) and (b), we can see that using tr2b is much more faster than tr2u.
+    The unbuffered one spends more time than the buffered since it uses system
+    call.
