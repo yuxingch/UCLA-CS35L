@@ -38,7 +38,7 @@ The key's randomart image is:
 (2) Create an account for the client on the server
 
 sudo useradd -d /home/xx -m xxxxx
-sudo passwd wangyu
+sudo passwd xxxxx
 
 set the password as 0517
 
