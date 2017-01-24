@@ -1,0 +1,90 @@
+
+0. Files I use:
+(1) large file:
+self-generated bigfile (5000000 bytes) called big.
+(2) small file:
+(provided in assignment 5)
+*~BO *{_CIA *hXE]D *LER #@_GZY #E\\OX #^BO #FKPS #NEM\4
+
+1. Use big file to test these three projects
+(1) sfrob
+command: time ./sfrob < big > big1
+The time it uses is:
+real		   0m0.263s
+user		   0m0.191s
+sys		   0m0.005s
+
+(2) sfrobs 
+command: time ./sfrobs < big > big2
+The time it uses is:
+real		   0m0.107s
+user		   0m0.012s
+sys		   0m0.028s
+
+(3) sfrobu
+command: time ./sfrobu < big > big3
+The time it uses is:
+real	     0m5.879s
+user	     0m0.500s
+sys	     0m5.300s
+
+2. Use small file to test these three
+
+(1) sfrob
+command: time printf '*~BO *{_CIA *hXE]D *LER #@_GZY #E\\OX #^BO #FKPS #NEM\4' |
+./sfrob |
+od -ta
+result:
+0000000   *   h   X   E   ]   D  sp   *   {   _   C   I   A  sp   *   ~
+0000020   B   O  sp   *   L   E   R  sp   #   N   E   M eot  sp   #   @
+0000040   _   G   Z   Y  sp   #   F   K   P   S  sp   #   E   \   O   X
+0000060  sp   #   ^   B   O  sp
+0000066
+
+real	0m0.004s
+user	0m0.001s
+sys	0m0.003s
+
+(2) sfrobu
+command: time printf '*~BO *{_CIA *hXE]D *LER #@_GZY #E\\OX #^BO #FKPS #NEM\4' |
+./sfrobu |
+od -ta
+
+result:
+Comparisons: 17
+0000000   *   h   X   E   ]   D  sp   *   {   _   C   I   A  sp   *   ~
+0000020   B   O  sp   *   L   E   R  sp   #   N   E   M eot  sp   #   @
+0000040   _   G   Z   Y  sp   #   F   K   P   S  sp   #   E   \   O   X
+0000060  sp   #   ^   B   O  sp
+0000066
+
+real	0m0.003s
+user	0m0.000s
+sys	0m0.004s
+
+(3) sfrobs
+command: time printf '*~BO *{_CIA *hXE]D *LER #@_GZY #E\\OX #^BO #FKPS #NEM\4' |
+./sfrobs |
+od -ta
+result:
+0000000   *   h   X   E   ]   D  sp   *   {   _   C   I   A  sp   *   ~
+0000020   B   O  sp   *   L   E   R  sp   #   N   E   M eot  sp   #   @
+0000040   _   G   Z   Y  sp   #   F   K   P   S  sp   #   E   \   O   X
+0000060  sp   #   ^   B   O  sp
+0000066
+
+real	0m0.006s
+user	0m0.002s
+sys	0m0.010s
+
+
+3. Overall comparison:
+
+For small files, the performance differences between sfrob and sfrobu are small.
+sfrobs seems to be the slowest of the three.
+
+For large files, sfrobu becomes much much slower than sfrob and sfrobs. This is because sfrobu uses
+system call. The buffered version runs relatively fast.
+
+(I also try the big file in assign5: /usr/local/cs/jdk*/jre/lib/rt.jar
+and sfrobu uses much more time than the two others.)
