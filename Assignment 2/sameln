@@ -22,22 +22,6 @@ do
     fi
 done
 
-# compare the files and create hard links
-#for i in "${ARRAY[@]}"
-#do
-#    for j in "${ARRAY[@]}"
-#    do
-#	if ["$i" != "$j"]
-#	then
-#	    cmp -s "$i" "$j"
-#	    if [$? -eq 0]
-#	    then
-#		ln -f "$i" "$j"
-#	    fi
-#	fi
-#    done
-#done
-
 for((i=0; i<$count; i++))
 do
     for((j=i+1; j<$count; j++))
