@@ -1,0 +1,107 @@
+1. man -k keyword
+
+2. use which keyword
+   which cp
+   /usr/local/cs/bin/cp
+   which wc
+   /usr/local/cs/bin/wc
+
+3. find /usr/bin -name ? -executable
+result:
+   /usr/bin/[
+   /usr/bin/w
+   /usr/bin/X
+   w: display who is logged in and what they are doing
+   X: a portable, network-transparent window system
+   [: no manual for [
+
+4. I use readlink:
+   readlink /usr/bin/emacs
+   Actually executed: /etc/alternatives/emacs
+
+5. g+s: 
+     g - gives permissions to the members of the file’s group
+     s - sets user ID or group ID on execution
+     Sets group ID on execution to the members of the file’s group
+   o-x: deny executable permissions to others
+
+6. -mtime -21
+   (I use “man find” to find corresponding command)
+
+7. find . -type d -mtime -21
+
+8. which find
+   cd /usr/bin
+   find . -type l | wc -l
+   241 (on server 07)
+
+9. cd /usr/lib
+   ls -lat
+   I get: kbd
+   It was modified on Sep 29, 2014.
+
+10. 
+locale command gets data from environment variables (localedef).
+
+11. I use: C-h a sort Enter and copy the results.
+Buffer-menu-sort	      M-x ... RET
+   Sort Tabulated List entries by the column at point.
+sort-columns		      M-x ... RET
+   Sort lines in region alphabetically by a certain range of columns.
+sort-fields		      M-x ... RET
+   Sort lines in region lexicographically by the ARGth field of each
+   line.
+sort-lines		      M-x ... RET
+   Sort lines in region alphabetically; argument means descending
+   order.
+sort-numeric-fields	      M-x ... RET
+   Sort lines in region numerically by the ARGth field of each line.
+sort-pages		      M-x ... RET
+   Sort pages in region alphabetically; argument means descending
+   order.
+sort-paragraphs		      M-x ... RET
+   Sort paragraphs in region alphabetically; argument means descending
+   order.
+sort-regexp-fields	      M-x ... RET
+   Sort the text in the region region lexicographically.
+tabulated-list-col-sort	      M-x ... RET
+   Sort Tabulated List entries by the column of the mouse click E.
+tabulated-list-sort	      M-x ... RET
+   Sort Tabulated List entries by the column at point.
+
+12. To find out what these keystrokes do, I use: C-h b and find them in the
+list.
+    C-M-a: begining-of-defun
+           Move backward to the beginning of a defun.
+    C-M-b: backward-sexp
+           Move backward across one balanced expression (sexp).
+    C-M-c: exit-recursive-edit
+           Exit from the innermost recursive edit or minibuffer.
+    C-M-d: down-list
+           Move forward down one level of parentheses.
+    C-M-e: end-of-defun
+           Move forward to next end of defun.
+    C-M-f: forward-sexp
+           Move forward across one balanced expression (sexp).
+    C-M-g: 
+    C-M-h: mark-defun
+           Put mark at end of this defun, point at beginning.
+
+13. C-g: it can abort partially typed or executing command in error recovery,
+                abort current search in incremental search
+                and abort command in the minibuffer.
+
+14. C-h d yank
+    yank
+  Command: Reinsert ("paste") the last stretch of killed text.
+  More precisely, reinsert the most recent kill, which is the stretch of
+killed text most recently killed OR yanked. Put point at the end, and set
+mark at the beginning without activating it.
+  With just C-u as argument, put point at beginning, and mark at end.
+
+15. When we use the directory listing of the Emacs dired command, there are
+two more lines in the beginning part:
+  dr-xr-xr-x.   2 root root       69632 Dec 22 13:15 .
+  drwxr-xr-x.  15 root root        4096 Dec 22 10:48 ..
+ The remaining lines seem to be the same.
+    
