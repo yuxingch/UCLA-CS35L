@@ -1,0 +1,28 @@
+
+Briefly answer the following questions.
+1. (1) Suppose the other teams really had been observing all the bytes going across the network.
+Is your resulting network still secure?
+   A: Yes. The network is still secure. Because we use SSH. We encrypt the message using server's
+   public key. To decrypt the message, they should use the corresponding private key. However, they
+   do not have that private key. Therefore, they cannot decrypt the message and our resulting
+   network is still secure.
+
+   (2) If assumed the other teams had also tapped our keyboards and had observed all of our team's
+keystrokes, is it still secure?
+   A: Yes. The network is still secure. The reason is the same as the previous one. Others do not
+   have the private key to decrypt the message.
+
+   (3) If we are booting off USB and we assume the other teams temporarily had physical control of
+the USB, is it still secure?
+   A: No. The network is not secure now. Since all the data is in this USB, USB also stores the key
+   pairs. Once other teams had physical control of the USB, they could get the key pairs. The
+   private key in the key pair could decrypt the encrypted message. Therefore, it is not secure.
+
+2. (1) Explain why the gpg --verify command in the following instructions doesn't really verify
+that you personally created the tar file in question.
+   A: The --verify command verifies signature with a public key. In other words, it only verifies
+   whether the signature matches the public key. It cannot check who actually creates the file. It
+   cannot check whether the file is personally created.
+   (2) How would you go about fixing this problem?
+   A: To fix the problem, I'm going to use key pairs. Since we use private key to encrypt the tar
+   file, if one public key could decrypt it, then the owner of that public key is the creator. 
