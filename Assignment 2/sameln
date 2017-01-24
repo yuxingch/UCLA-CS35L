@@ -1,0 +1,54 @@
+#! /bin/bash
+
+SAVEIFS="$IFS"
+IFS=$'\n'
+
+dir=$1
+RESULT=`ls -a $dir`  # have to sort???
+
+count=0
+declare -a ARRAY
+
+# check and put all the regular file into our ARRAY
+for FILE in $RESULT
+do
+    if [ ! -r "$dir/$FILE" ]
+    then
+	echo "$dir/$FILE is not readable."
+    elif [ -f "$dir/$FILE" ]
+    then
+	ARRAY[$count]="$dir/$FILE"
+	let count=count+1
+    fi
+done
+
+# compare the files and create hard links
+#for i in "${ARRAY[@]}"
+#do
+#    for j in "${ARRAY[@]}"
+#    do
+#	if ["$i" != "$j"]
+#	then
+#	    cmp -s "$i" "$j"
+#	    if [$? -eq 0]
+#	    then
+#		ln -f "$i" "$j"
+#	    fi
+#	fi
+#    done
+#done
+
+for((i=0; i<$count; i++))
+do
+    for((j=i+1; j<$count; j++))
+    do
+	cmp -s "${ARRAY[$i]}" "${ARRAY[$j]}"
+	if [ $? -eq 0 ]
+	then
+	   # rm "${ARRAY[$j]}"
+	    ln -f "${ARRAY[$i]}" "${ARRAY[$j]}"
+	fi
+    done
+done
+
+IFS="$SAVEIFS"
