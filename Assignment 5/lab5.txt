@@ -1,0 +1,147 @@
+
+1. First I get the old stable version of coreutils using:
+   wget http://web.cs.ucla.edu/classes/winter16/cs35L/assign/coreutils-with-
+bug.tar.gz
+   Then I unzip the file using:
+   tar -xzvf coreutils-with-bug.tar.gz
+
+2. Build this old buggy version.
+   (1) Create a new directory, coreutils-with-bug will be installed under this
+directory:
+   mkdir temp
+   (2) Enter coreutils-with-bug directory
+   cd coreutils-with-bug
+   (3) Start
+   ./configure --prefix=/u/eng/class/classxxx/35L/week5/lab5/temp
+   make
+
+   the error message:
+   In file included from utimecmp.c:41:0:
+   utimens.h:2:5: error: conflicting types for 'futimens'
+    int futimens (int, char const *, struct timespec const [2]);
+         ^
+   In file included from utimecmp.h:25:0,
+                    from utimecmp.c:25:
+   /usr/include/sys/stat.h:373:12: note: previous declaration of 'futimens' was here
+   extern int futimens (int __fd, const struct timespec __times[2]) __THROW;
+               ^
+   Makefile:659: recipe for target 'utimecmp.o' failed
+   make[3]: *** [utimecmp.o] Error 1
+   make[3]: Leaving directory '/w/home.10/class/classxxx/35L/week5/lab5/coreutils-with-bug/lib'
+   Makefile:414: recipe for target 'all' failed
+   make[2]: *** [all] Error 2
+   make[2]: Leaving directory '/w/home.10/class/classxxx/35L/week5/lab5/coreutils-with-bug/lib'
+   Makefile:419: recipe for target 'all-recursive' failed
+   make[1]: *** [all-recursive] Error 1
+   make[1]: Leaving directory '/w/home.10/class/classxxx/35L/week5/lab5/coreutils-with-bug'
+   Makefile:357: recipe for target 'all' failed
+   make: *** [all] Error 2
+   
+
+3. Apply the patch
+(1) wget http://web.cs.ucla.edu/classes/winter16/cs35L/assign/coreutils.diff
+(2) patch -p0 < coreutils.diff
+It gives:
+patching file lib/utimens.c
+patching file lib/utimens.h
+patching file src/copy.c
+patching file src/tee.c
+patching file src/touch.c
+(3) Rebuild the program
+./configure --prefix=/u/eng/class/classxxx/35L/week5/lab5/temp
+make
+make install
+
+4. Reproduce
+
+$ tmp=$(mktemp -d)
+$ cd $tmp
+$ touch -d '1918-11-11 11:00 GMT' wwi-armistice
+$ touch now
+$ sleep 1
+$ touch now1
+$ TZ=UTC0 ls -lt --full-time wwi-armistice now now1
+
+-rw-r--r-- 1 classxxx class 0 2016-02-04 20:53:18.582426965 +0000 now1
+-rw-r--r-- 1 classxxx class 0 2016-02-04 20:53:10.952309082 +0000 now
+-rw-r--r-- 1 classxxx class 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice
+
+if I use the buggy version:
+
+$ TZ=UTC0 ~/35L/week5/lab5/coreutils-with-bug/src/ls -lt --full-time wwi-armistice now now1 ls -lt --full-time wwi-armistice now now1
+-rw-r--r-- 1 classxxx class 0 1918-11-11 11:00:00.000000000 +0000 wwi-armistice
+-rw-r--r-- 1 classxxx class 0 2016-02-04 20:53:18.582426965 +0000 now1
+-rw-r--r-- 1 classxxx class 0 2016-02-04 20:53:10.952309082 +0000 now
+
+The order of these files are not correct.
+
+Reproduce the problem in your home directory on the SEASnet Linux servers:
+
+-rw-r--r-- 1 classxxx class 0 2054-12-17 09:28:16.000000000 -0800 wwi-armistice
+-rw-r--r-- 1 classxxx class 0 2016-02-04 13:03:27.569099000 -0800 now1
+-rw-r--r-- 1 classxxx class 0 2016-02-04 13:03:17.785255000 -0800 now
+
+5. Debug
+
+cd /tmp/tmp.yunyPb4hWZ
+gdb ~/35L/week5/lab5/coreutils-with-bug/src/ls
+
+(1) To find all the functions used in this file, I use:
+(gdb) info function
+From previous parts, we know that there should be some problems in ordering files.
+So I find the function that relates to sorting.
+
+(2) Set breakpoint
+(gdb) break sort_files
+(gdb) run -lt
+Then I could step into sort_files function, and go through it using (gdb) n.
+After several steps, I find out that in sort_files function, it calls another
+function called compare_mtime. So I check compare_mtime.
+(gdb) break compare_mtime
+
+The breakpoints are in timespec.h:48
+
+Then I check timespec.h and use M-g g to enter line 48, it shows:
+
+/* Return negative, zero, positive if A < B, A == B, A > B, respectively.
+   Assume the nanosecond components are in range, or close to it.  */
+static inline int
+timespec_cmp (struct timespec a, struct timespec b)
+{
+  int diff = a.tv_sec - b.tv_sec;
+  return diff ? diff : a.tv_nsec - b.tv_nsec;
+}
+
+the problem is: according to the code above, timespec_cmp does not return
+negative, zero or positive as we want. The reason is that when we do the
+subtraction, if files have time stamps that are very far in the past, the
+subtraction will cause overflow. The result is that it seems to act as if they are in the future.
+
+6. Fix the bug:
+Instead, we should directly compare timespec a and timespec b, so I change the
+code into:
+
+static inline int
+timespec_cmp (struct timespec a, struct timespec b)
+{
+  if (a.tv_sec < b.tv_sec)
+    return -1;
+  else if (a.tv_sec > b.tv_sec)
+    return 1;
+  else
+    {
+      if (a.tv_nsec < b.tv_nsec)
+       return -1;
+      else if (a.tv_nsec > b.tv_nsec)
+       return 1;
+      else
+       return 0;
+    }
+}
+After I rebuild to problem, it works fine now.
+
+7. Construct a new patch file lab5.diff containing your coreutils fixes:
+   a ChangeLog entry followed by a diff -u patch.
+
+diff -u ~/35L/week5/lab5/newTar/coreutils-with-bug/lib/timespec.h timespec.h > lab5.diff
+Then I open ChangeLog using C-x 4 a, and copy the lines I need. Next, I paste it into lab5.diff.
