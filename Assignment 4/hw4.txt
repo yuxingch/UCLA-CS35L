@@ -1,0 +1,56 @@
+
+2. enter into diffutils directory
+   #	 Check out version 3.0 of Diffutils into a new branch named
+   git checkout -b quote v3.0
+   Switched to a new branch 'quote'
+
+3. patch under this directory: ~/35L/week4/copy/diffutils
+   patch -p1 < ~/35L/week4/gitroot/diffutils/quote-3.0-patch.txt
+
+and there are 6 patching files:
+    patching file src/cmp.c
+    patching file src/diff.c
+    patching file src/diff3.c
+    patching file src/dir.c
+    patching file src/sdiff.c
+    patching file src/util.c
+
+5. emacs src/cmp.c
+   C-x 4 a
+   C-x C-f
+and I write "change all "`" to "'" "
+
+6. commit changes to the new branch
+   git add .
+   git commit -F ./src/ChangeLog
+
+7. git format-patch -1 --stdout > formatted-patched.txt
+
+8. My partner is xxx (UID:xxx)
+   git checkout -b partner v3.0
+   git am < ~/35L/week4/copy/formatted-patch.txt
+
+   Then I apply following steps:
+   ./bootstrap
+   cd lib
+  wget http://web.cs.ucla.edu/classes/winter16/cs35L/assign/diffutils-gets.diff
+  patch -p1 < diffutils-gets.diff
+  cd ..
+  ./configure
+  make
+  make check
+  diff . -
+  diff --help
+
+9. make distdir
+It create a new directory called "diffutils-3.0.1-7840" under diffutils
+emacs diffutils*/ChangeLog
+The content in this file is the same as my ChangeLog.
+
+10.  First I download and install XQuartz from website.
+ssh -X classxxx@lnxsrv01.seas.ucla.edu
+export PATH=/usr/local/cs/bin:$PATH
+git clone git://git.savannah.gnu.org/emacs.git
+cd emacs
+gitk
+Then I take a screenshot.
