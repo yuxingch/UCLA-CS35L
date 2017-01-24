@@ -9,7 +9,7 @@ tar -xf coreutils-7.6.tar.gz
     the new directory is where Coreutils will be intalled
     the directory is: /u/eng/class/classych/35L/week3/temp
 
-(2) ./configure --prefix=/u/eng/class/classych/35L/week3/temp
+(2) ./configure --prefix=/u/eng/class/classxxx/35L/week3/temp
     make
     make intall
 
@@ -45,5 +45,5 @@ tar -xf coreutils-7.6.tar.gz
 
 touch -t 200101012233 test1
 ./ls -l
--rw-r--r-- 1 classych class 0 Jan  1  2001 test1
--rw-r--r-- 1 classych class 0 Jan 19 13:36 test2
+-rw-r--r-- 1 classxxx class 0 Jan  1  2001 test1
+-rw-r--r-- 1 classxxx class 0 Jan 19 13:36 test2
