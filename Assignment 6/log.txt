@@ -1,0 +1,91 @@
+
+0. My team member is ....
+
+1. dpkg --get-selections | grep openssh
+The result is:
+openssh-client                                  install
+So I try:
+   sudo apt-get intall openssh-server
+
+Then I check by using:
+$ dpkg --get-selections | grep openssh
+openssh-client				install
+openssh-server				install
+openssh-sftp-server			install
+
+2. As a server:
+(1) Generate public and private keys
+$ ssh-keygen
+Set the password as 12345
+
+Your identification has been saved in /home/ubuntu/.ssh/id_rsa.
+Your public key has been saved in /home/ubuntu/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:zlhd4X8uemyiafjz7CHhNDXHy5ScCtyLR/9MWHwL0lk ubuntu@ubuntu
+The key's randomart image is:
++---[RSA 2048]----+
+|            .  E |
+|         . o.+o+ |
+|          o.B+B +|
+|         . *.X.+o|
+|        S * + *.o|
+|       = o +   * |
+|      . o.o ... +|
+|        . o+.o+. |
+|         o+==+   |
++----[SHA256]-----+
+
+(2) Create an account for the client on the server
+
+sudo useradd -d /home/xx -m xxxxx
+sudo passwd wangyu
+
+set the password as 0517
+
+(3) Create .ssh directory for new user
+
+cd /home/xx
+sudo mkdir .ssh
+
+(4) Change ownership and permission on .ssh directory
+
+sudo chown -R xxxxx .ssh
+sudo chmod 700 .ssh
+
+(5) Check my IP address
+ifconfig
+10.97.85.71
+
+(6) Optional:
+sudo apt-get install emacs24
+sudo emacs /etc/ssh/sshd_config
+and I change "yes" into "no"
+
+(7)
+My client touch a new file named "test" under /home/xx directory, and I check
+under the same directory:
+ubuntu@ubuntu:/home/xx$ ls
+examples.desktop  test
+If I check the creating time:
+-rw-rw-r-- 1 xxxxx xxxxx    0 Feb 11 12:57 test
+
+3. As a client:
+(1) Copy my public key to the server for key-based authentication.
+ssh-copy-id -i classxxx@10.97.85.64
+
+(2) Add private key to authentication agent
+ssh-add
+
+(3) SSH to server
+ssh classxxx@10.97.85.64
+ssh -X classxxx@10.97.85.64
+
+(4)
+And I check by using:
+    touch hi
+My host can also see this file in her terminal.
+
+Then I use:
+    xterm
+    firefox
+And they work well.
