@@ -1,0 +1,55 @@
+
+Q1: Why did Brady's patch remove the line "case_long_iso_time_style:"? Was it
+necessary to remove that line? Explain.
+
+A: It was not necessary to remove that line, since we also removed:
+"if (locale_format == long_time_format[i])
+    goto case_long_iso_time_style;"
+It no longer needs "case_long_iso_time_style:" to compile the file since it
+will never be executed. 
+
+Q2: If your company adopts this patched version of Coreutils instead of the
+default one, what else should you watch out for? Might this new version of
+Coreutils introduce other problems with your application, perhaps in countries
+where users don't speak English and don't understand English-format dates?
+
+A:  We should watch out for the non-English locales which might cause problems.
+    Also, we should consider if this patch can satisfy majority of users.
+    In countries where user's don't speak English and don't understand
+    English-format dates, people may not understand the date, since they
+    may not know which month it is.
+
+Q3: What happens when this script is invoked on an empty file like /dev/null,
+and why?
+
+A: arbitrary empty file:
+   emacs empty
+   ./randline.py  -n 4 empty
+
+Traceback (most recent call last):
+  File "./randline.py", line 70, in <module>
+    main()
+  File "./randline.py", line 64, in main
+    sys.stdout.write(generator.chooseline())
+  File "./randline.py", line 34, in chooseline
+    return random.choice(self.lines)
+  File "/usr/lib64/python2.7/random.py", line 274, in choice
+    return seq[int(self.random() * len(seq))]  # raises IndexError if seq is
+    empty
+  IndexError: list index out of range
+
+  Use /dev/null: same result
+
+  Because it cannot random a line if there is no content in the file.
+
+Q4: What happens when this script is invoked with Python 3 rather than Python 2
+, and why? (You can run Python 3 on the SEASnet hosts by using the command
+python3 instead of python.)
+
+File "randline.py", line 65
+    except IOError as (errno, strerror):
+                          ^
+SyntaxError: invalid syntax
+
+Reason: Because python3 and python2 are different in some ways. It becomes
+invalid syntax in python3.
