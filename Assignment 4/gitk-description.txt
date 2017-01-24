@@ -1,0 +1,13 @@
+
+Description of the subwindows:
+1. The top left corner shows all the commits that are made for the repository.
+   Each commit is represented by a dot. Different branches are represented by
+   lines in different colors. We can clear observe the merge point.
+2. The middle window on the top shows the author of each commit. In the format
+   of <Author Name> <email address>.
+3. The top right window displays the date and time when each commit was made.
+4. Shal ID: It shows the commit ID.
+5. Bottom left: it shows some detail information about this commit, including
+   the changes, the parent, the child and the branches. It also includes the
+   name of the author and the date.
+6. Bottom right: it shows the comments on this commit. 
