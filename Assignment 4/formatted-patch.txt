@@ -1,7 +1,7 @@
 From 7840c964f652ad694eca77e3dc373f2a35bc8312 Mon Sep 17 00:00:00 2001
-From: Yuxing Chen <classych@lnxsrv07.seas.ucla.edu>
+From: Yyxxxx Ch <classxxx@lnxsrv07.seas.ucla.edu>
 Date: Fri, 29 Jan 2016 15:51:32 -0800
-Subject: [PATCH] 2016-01-29  Yuxing Chen  <classych@lnxsrv07.seas.ucla.edu>
+Subject: [PATCH] 2016-01-29  Yyxxxx Ch <classxxx@lnxsrv07.seas.ucla.edu>
 
 	* util.c (finish_output): change all "`" into "'"
 
