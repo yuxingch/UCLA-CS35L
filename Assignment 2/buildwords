@@ -1,0 +1,39 @@
+#! /bin/bash
+
+# remove the beginning and the ending
+sed '/<!DOCTYPE/,/<td>Adopt/d' |
+sed '/<\/table>/,/<\/html>/d'|
+
+# translate all the uppercase letters into lowercase
+tr '[:upper:]' '[:lower:]'|
+
+# delete all the English words
+sed '/<tr>/,/<\/td>/d'|
+
+# delete all the </tr>, <td>, </td>
+sed 's/<\/tr>//g'|
+sed 's/<td>//g'|
+sed 's/<\/td>//g'|
+
+# remove all the <u>, </u>
+sed 's/<u>//g'|
+sed 's/<\/u>//g'|
+
+# separate words (commas and spaces)
+sed 's/,/\n/g' |
+sed 's/\ /\n/g'|
+
+# replace ` with '
+tr '`' "'"|
+
+# only keep Hawaiian words
+tr -c "pk\'mnwlhaeiou\n" "b"|
+sed '/b/d'|
+
+# check
+tr -cs "pk\'mnwlhaeiou" "[\n*]"|
+
+# delete the first line
+sed 1d|
+
+sort -u
