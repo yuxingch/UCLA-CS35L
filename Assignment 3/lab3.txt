@@ -1,0 +1,49 @@
+1. Grab Coreutils 7.6
+wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-7.6.tar.gz
+
+   unzip Coreutils 7.6
+tar -xf coreutils-7.6.tar.gz
+
+2. Compile and install Coreutils
+(1) create a new directory using mkdir
+    the new directory is where Coreutils will be intalled
+    the directory is: /u/eng/class/classych/35L/week3/temp
+
+(2) ./configure --prefix=/u/eng/class/classych/35L/week3/temp
+    make
+    make intall
+
+3. To reproduce the bug, go into bin directory
+   cd bin
+
+   set it to en_US.UTF-8
+   export LC_ALL='en_US.UTF-8'
+   
+   ./ls -l /bin/bash
+   -rwxr-xr-x 1 root root 960376 2015-07-08 04:11 /bin/bash
+
+   the output above gives us the bug: we get YYYY-MM-DD date.
+   
+4. go to src
+   Use: ls | grep ls  and we can find ls.c
+
+   create a new file called patchFile using emacs: emacs patchFile
+   copy Brady's patch from website and paste it in patchFile
+
+   Patch:
+   patch -p1 --ignore-whitespace < patchFile
+
+5. cd src
+   make
+
+6. (1) return to the bin folder
+       ./ls -l /bin/bash
+-rwxr-xr-x 1 root root 960376 2015-07-08 04:11 /bin/bash
+   We can see the bug has not been fixed, since we modified ls.c in src and
+   did not install it.
+   (2) return to the src folder
+
+touch -t 200101012233 test1
+./ls -l
+-rw-r--r-- 1 classych class 0 Jan  1  2001 test1
+-rw-r--r-- 1 classych class 0 Jan 19 13:36 test2
